@@ -1,0 +1,58 @@
+﻿@page "/UploadPictures"
+
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">First Name</th>
+            <th scope="col">Last Name</th>
+            <th scope="col">Pictures</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var user in Users)
+        {
+            <tr>
+                <th scope="row">1</th>
+                <td>@user.FirstName</td>
+                <td>@user.LastName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<DropDown TItem="string" OnSelected="@DropdownClicked">
+    <InitialTip>Select Picture</InitialTip>
+    <ChildContent>
+        <DropDownItem Item="@Users[0].Pictures[0]">Test</DropDownItem>
+        <DropDownItem Item="@Users[0].Pictures[0]">Test</DropDownItem>
+    </ChildContent>
+</DropDown>
+
+@code {
+
+    private List<User> Users { get; set; }
+    private bool expanden = false;
+
+    protected override Task OnInitializedAsync()
+    {
+        Users = new List<User>()
+        {
+            new User()
+            {
+                FirstName = "Kenneth",
+                LastName = "Andersen",
+                Pictures = new List<string>(){ "Hello", "Year" }
+            }
+        };
+
+        return base.OnInitializedAsync();
+    }
+
+    private void DropdownClicked(string selected) 
+    {
+        var test = selected;
+    }
+
+}
