@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         # Checkout the code
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v2
 
         # Install .NET Core SDK
         - name: Setup .NET Core
@@ -29,7 +29,7 @@ jobs:
           with:
             github_token: ${{ secrets.PUBLISH_TOKEN }}
             publish_branch: gh-pages
-            publish_dir: bin/Release/net6.0/publish/wwwroot
+            publish_dir: PWA_Blazor/bin/Release/net6.0/publish/wwwroot
             allow_empty_commit: false
             keep_files: false
             force_orphan: true
