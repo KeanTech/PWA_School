@@ -4,10 +4,10 @@
 
 @code {
     [CascadingParameter(Name = "Dropdown")]
-    public DropDown<TItem> Dropdown { get; set; }
+    public DropDown<TItem>? Dropdown { get; set; }
 
     [Parameter]
-    public TItem Item { get; set; }
+    public TItem? Item { get; set; }
     [Parameter]
-    public RenderFragment<TItem> ChildContent { get; set; }
+    public RenderFragment<TItem>? ChildContent { get; set; }
 }

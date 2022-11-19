@@ -1,0 +1,105 @@
+﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Dialog</h4>
+                <button type="button" class="close" @onclick="ModalCancel">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+
+                    <div class="form-group mb-1">
+
+                            <input type="text" @bind-value="dialogAnwser.ImageName" placeholder="Image Name" />
+                        
+                    </div>
+                    
+
+                    <div class="form-group mb-1">
+
+                        <DropDown TItem="string" OnSelected="@ImageTypeSelected">
+                            <InitialTip>Select file type</InitialTip>
+                            <ChildContent>
+                                @foreach (var type in sizeAndTypes.ImageTypes)
+                                {
+                                    <DropDownItem Item="@type">@type</DropDownItem>
+                                }
+
+                            </ChildContent>
+                        </DropDown>
+
+                    </div>
+
+                    <div class="form-group mb-1">
+
+                        <DropDown TItem="string" OnSelected="@ImageSizeSelected">
+                            <InitialTip>Select image size</InitialTip>
+                            <ChildContent>
+                                @foreach (var type in sizeAndTypes.ImageSizes)
+                                {
+                                    <DropDownItem Item="@type">@type</DropDownItem>
+                                }
+
+                            </ChildContent>
+                        </DropDown>
+
+                    </div>
+                </form>
+
+            </div>
+            <div class="modal-footer">
+                @switch (DialogType)
+                {
+                    case ModalDialogType.Ok:
+                        <button type="button" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                        break;
+                    case ModalDialogType.OkCancel:
+                        <button type="button" class="btn" @onclick="@ModalCancel">Cancel</button>
+                        <button type="button" class="btn btn-primary" @onclick=@ModalOk>OK</button>
+                        break;
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    // Set a parameter so you can trigger the event on button click
+    // also called a callbackevent so the child can call back the parent
+    [Parameter]
+    public EventCallback<DialogAnwser> OnClose { get; set; }
+
+    [Parameter]
+    public ModalDialogType DialogType { get; set; }
+
+    private ImageSizeAndTypes sizeAndTypes = new();
+
+    private DialogAnwser dialogAnwser = new DialogAnwser();
+
+    private Task ModalCancel()
+    {
+        dialogAnwser.ButtonClicked = false;
+        return OnClose.InvokeAsync(dialogAnwser);
+    }
+
+    private Task ModalOk()
+    {
+        dialogAnwser.ButtonClicked = true;
+        return OnClose.InvokeAsync(dialogAnwser);
+    }
+
+    public enum ModalDialogType
+    {
+        Ok,
+        OkCancel,
+    }
+
+    private void ImageTypeSelected(string selected)
+    {
+        dialogAnwser.ImageType = selected;
+    }
+    private void ImageSizeSelected(string selected)
+    {
+        dialogAnwser.ImageSize = selected;
+    }
+}

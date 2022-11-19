@@ -1,58 +1,142 @@
-﻿@page "/UploadPictures"
+﻿@page "/"
+@using PWA_Blazor.Component;
 
-<table class="table">
-    <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">First Name</th>
-            <th scope="col">Last Name</th>
-            <th scope="col">Pictures</th>
-        </tr>
-    </thead>
+@inject Blazored.LocalStorage.ILocalStorageService localStore
 
-    <tbody>
-        @foreach (var user in Users)
-        {
+@if (isLoading == false)
+{
+    <table class="table">
+        <thead>
             <tr>
-                <th scope="row">1</th>
-                <td>@user.FirstName</td>
-                <td>@user.LastName</td>
-            </tr>
-        }
-    </tbody>
-</table>
+                <th scope="col">#</th>
+                <th scope="col">Image</th>
+                <th scope="col">Image Name</th>
+                <th scope="col">Image Size (Bytes)</th>
+                <th scope="col">Image Format</th>
 
-<DropDown TItem="string" OnSelected="@DropdownClicked">
-    <InitialTip>Select Picture</InitialTip>
-    <ChildContent>
-        <DropDownItem Item="@Users[0].Pictures[0]">Test</DropDownItem>
-        <DropDownItem Item="@Users[0].Pictures[0]">Test</DropDownItem>
-    </ChildContent>
-</DropDown>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in storageList)
+            {
+                <tr>
+                    <th scope="row">@storageList.IndexOf(item)</th>
+                    <td><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
+                    <td>@item.FileName</td>
+                    <td>@item.FileSize</td>
+                    <td>@item.ContentType</td>
+                </tr>
+
+            }
+
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Loading...</p>
+}
+@if (ShowDialog)
+{
+    <ModalDialog DialogType="ModalDialog.ModalDialogType.OkCancel"
+             OnClose="@OnCloseDialog">
+    </ModalDialog>
+}
+
+
+<p>
+    <label>
+        Select file
+        <InputFile OnChange="@LoadFiles" single accept=".jpg,.jpeg,.png,.PNG" />
+    </label>
+    <label>
+        <button class="btn btn-primary" @onclick="OnOpenDialog">Upload</button>
+    </label>
+    <label>
+        <button class="btn btn-primary" @onclick="ClearStorage">Clear Storage</button>
+    </label>
+
+</p>
+
+
 
 @code {
+    public bool ShowDialog { get; set; }
+    private bool isLoading;
+    private string extensionname = "default";
+    private List<ImageFile> storageList = new List<ImageFile>();
+    private string isdisplayimage;
+    private ImageSizeAndTypes sizeAndTypes = new ImageSizeAndTypes();
+    private IBrowserFile file;
 
-    private List<User> Users { get; set; }
-    private bool expanden = false;
-
-    protected override Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
     {
-        Users = new List<User>()
-        {
-            new User()
-            {
-                FirstName = "Kenneth",
-                LastName = "Andersen",
-                Pictures = new List<string>(){ "Hello", "Year" }
-            }
-        };
-
-        return base.OnInitializedAsync();
+        storageList = await localStore.GetItemAsync<List<ImageFile>>("Img");
+        if (storageList == null || storageList.Count < 1)
+            storageList = new List<ImageFile>();
     }
 
-    private void DropdownClicked(string selected) 
+    // This method is called on evnet in ModalDialog component to set the image name and sizes
+    private async void OnCloseDialog(DialogAnwser anwser)
+    {
+        if (anwser.ButtonClicked == false)
+        {
+            ShowDialog = false;
+            return;
+        }
+
+        if (string.IsNullOrEmpty(anwser.ImageType))
+            extensionname = Path.GetExtension(file.Name);
+        else
+            extensionname = anwser.ImageType;
+
+        if (sizeAndTypes.ImageTypes.Contains(extensionname))
+        {
+            ImageFile imageFile = await ImageHandling.GetImageFile(file, anwser);
+            storageList.Add(imageFile);
+            isdisplayimage = "block";
+        }
+        else
+        {
+            isdisplayimage = "none";
+        }
+
+        UpdateStorage();
+        isLoading = false;
+        ShowDialog = false;
+        StateHasChanged();
+    }
+
+    private void OnOpenDialog()
+    {
+        if (file == null)
+            return;
+
+        ShowDialog = true;
+        StateHasChanged();
+    }
+
+    private async void UpdateStorage()
+    {
+        await localStore.SetItemAsync("Img", storageList);
+    }
+
+    private async void ClearStorage()
+    {
+        await localStore.ClearAsync();
+        storageList.Clear();
+        StateHasChanged();
+    }
+
+    private void DropdownClicked(string selected)
     {
         var test = selected;
+    }
+
+    private void LoadFiles(InputFileChangeEventArgs e)
+    {
+        file = e.File;
     }
 
 }
