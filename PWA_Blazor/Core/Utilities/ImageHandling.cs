@@ -86,7 +86,7 @@ namespace PWA_Blazor.Core.Utilities
         /// <returns></returns>
         private static int[] GetImageSizes(DialogAnwser anwser) 
         {
-            int[] imageSizes = new int[1];
+            int[] imageSizes = new int[2];
             string[] sizes;
             if (string.IsNullOrEmpty(anwser.ImageSize) == false)
             {
