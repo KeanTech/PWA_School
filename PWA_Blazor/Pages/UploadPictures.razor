@@ -1,6 +1,5 @@
 ﻿@page "/UploadPictures"
 @using PWA_Blazor.Component;
-
 @inject Blazored.LocalStorage.ILocalStorageService localStore
 
 @if (isLoading == false)
@@ -48,32 +47,90 @@ else
     </ModalDialog>
 }
 
-
 <p>
-    <label>
-        Select file
-        <InputFile OnChange="@LoadFiles" single accept=".jpg,.jpeg,.png,.PNG" />
+    <label class="fw-bolder">
+        Select file or drop file here:
     </label>
-    <label>
-        <button class="btn btn-primary" @onclick="OnOpenDialog">Upload</button>
-    </label>
-    <label>
-        <button class="btn btn-primary" @onclick="ClearStorage">Clear Storage</button>
-    </label>
+    <div class="border-2 border-primary w-25" >
 
+        <InputFile OnChange="@LoadFiles" single accept=".jpg,.jpeg,.png,.PNG" class="btn btn-primary" />
+    
+    </div>
+    <div class="mt-2">
+        <label>
+            <button class="btn btn-success" @onclick="OnOpenDialog">Upload</button>
+        </label>
+        <label>
+            <button class="btn btn-danger" @onclick="ClearStorage">Clear Storage</button>
+        </label>
+    </div>
+    
 </p>
 
 
 
 @code {
+    /// <summary>
+    /// This is used to determine if the dialogbox should be shown or not
+    ///
+    /// <para>Used with <seealso cref="ModalDialog"/></para>
+    ///
+    /// 
+    /// <code> 
+    /// @if (ShowDialog)
+    /// {
+    ///    The modal goes here...
+    /// }    
+    ///</code>
+    /// 
+    /// </summary>
+    /// 
+    ///
+    /// <param name="ShowDialog"></param>
+    /// <returns></returns>
     public bool ShowDialog { get; set; }
+    /// <summary>
+    /// This is used to determine if the page is loading data or not 
+    ///<para>And change the html accordingly</para>
+    ///<para> If the page is not loading data</para>
+    /// <code>
+    ///@if (isLoading)
+    ///{
+    ///  html goes here...
+    ///}
+    ///</code>
+    /// <para> When page is loading data </para>
+    /// <code>
+    ///else
+    ///{
+    ///  Loading...
+    ///}
+    ///</code>
+    /// </summary>
+    ///
+    /// <param name="isLoading"></param>
+    /// <returns></returns>
     private bool isLoading;
     private string extensionname = "default";
+    /// <summary>
+    /// This list is used to store Images that the user uploads
+    ///<para>It will be cached by the <see cref="Blazored.LocalStorage.ILocalStorageService"/></para>
+    ///<para> If the page is not loading data</para>
+    /// </summary>
+    ///
+    /// <param name="storageList"></param>
+    /// <returns></returns>
     private List<ImageFile> storageList = new List<ImageFile>();
     private ImageSizeAndTypes sizeAndTypes = new ImageSizeAndTypes();
     private IBrowserFile file;
 
-
+    ///<summary>
+    /// This method runs when the page gets initialized 
+    /// The page throws an error because this list is used in the view/page 
+    ///<para><see cref="storageList"/> is null</para>
+    ///<para>Thats why it will get set by this method</para> 
+    ///</summary>
+    ///<returns><see cref="Task"/></returns>
     protected override async Task OnInitializedAsync()
     {
         storageList = await localStore.GetItemAsync<List<ImageFile>>("Img");
@@ -82,8 +139,14 @@ else
 
     }
 
-
-    // This method is called on evnet in ModalDialog component to set the image name and sizes
+    ///<summary>
+    /// This method responses on the <see cref="EventCallback{DialogAnwser}"/>
+    /// <para>From <see cref="ModalDialog.OnClose"/></para>
+    ///
+    ///
+    /// </summary>
+    ///<param name="anwser">DialogAnwser data is being changed by user in the <see cref="ModalDialog"/></param>
+    ///<returns><see cref="Task"/></returns>
     private async void OnCloseDialog(DialogAnwser anwser)
     {
         isLoading = true;
@@ -111,6 +174,12 @@ else
         StateHasChanged();
     }
 
+    ///<summary>
+    /// <see cref="IBrowserFile"/ needs to be set for this method to work>
+    ///<para>If the file is not set the method will return</para>
+    /// Otherwise is will set the ShowDialog to true and the Dialog will pop up
+    /// </summary>
+    ///<param> </param>
     private void OnOpenDialog()
     {
         if (file == null)
@@ -120,11 +189,19 @@ else
         StateHasChanged();
     }
 
+    ///<summary>
+    /// Takes data from <see cref="storageList"/> an stores is in <see cref="Blazored.LocalStorage.ILocalStorageService"/>
+    /// </summary>
+    ///<returns></returns>
     private async void UpdateStorage()
     {
         await localStore.SetItemAsync("Img", storageList);
     }
 
+    ///<summary>
+    /// Clear the <see cref="storageList"/> and removes all data from the <see cref="Blazored.LocalStorage.ILocalStorageService"/> cache
+    /// </summary>
+    ///<returns></returns>
     private async void ClearStorage()
     {
         await localStore.ClearAsync();
@@ -132,11 +209,12 @@ else
         StateHasChanged();
     }
 
-    private void DropdownClicked(string selected)
-    {
-        var test = selected;
-    }
-
+    ///<summary>
+    /// Puts the user selected file i variable
+    /// <para>That is used in the <see cref="OnCloseDialog(DialogAnwser)"/> if its not set the user can upload</para>
+    /// </summary>
+    ///<paramref name="e"/> Is the user selected file
+    ///<returns></returns>
     private void LoadFiles(InputFileChangeEventArgs e)
     {
         file = e.File;

@@ -4,7 +4,7 @@
 {
     <tr>
         <th scope="row">@Items.IndexOf(item)</th>
-        <td @onclick="e => OnOpenDetails(item)"><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
+        <td @onclick="e => OnOpenDetails(new ImageFile(){ Base64data = item.Base64data})"><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
         <td @onclick="e => OnOpenDetails(item)">@item.FileName</td>
         <td @onclick="e => OnOpenDetails(item)">@item.FileSize</td>
         <td @onclick="e => OnOpenDetails(item)">@item.ContentType</td>
