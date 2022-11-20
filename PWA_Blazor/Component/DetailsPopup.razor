@@ -1,0 +1,47 @@
+﻿<div class="modal fade show" id="myModal" style="display:block; background-color: rgba(10,10,10,.8);" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-light">
+            <div class="modal-header align-items-center">
+                <h4 class="modal-title ">Details</h4>
+                <button type="button" class="close" @onclick="ModalCancel">&times;</button>
+            </div>
+            <div class="modal-body">
+
+                <div class="card border border-2 border-info">
+                    <div class="card-img-top d-flex bg-dark text-light">
+                        <div class="col">
+                            <img class="figure-img" src="@ImageFile.Base64data" alt="@ImageFile.FileName" style="display:block; width:200px;height:200px;">
+                        </div>
+                        <div class="col">
+                            <label class="fw-bolder">File Name:</label>
+                            <p class="">@ImageFile.FileName</p>
+                            <label class="fw-bolder">File Size Bytes:</label>
+                            <p class="">@ImageFile.FileSize</p>
+                            <label class="fw-bolder">File Type:</label>
+                            <p class="">@ImageFile.ContentType</p>
+                        </div>
+                        
+                    </div>
+
+                </div>
+
+            </div>
+           
+        </div>
+    </div>
+</div>
+
+@code {
+    // Set a parameter so you can trigger the event on button click
+    // also called a callbackevent so the child can call back the parent
+    [Parameter]
+    public EventCallback<bool> OnClose { get; set; }
+    
+    [Parameter]
+    public ImageFile ImageFile { get; set; }
+
+    private Task ModalCancel()
+    {
+        return OnClose.InvokeAsync(false);
+    }
+}

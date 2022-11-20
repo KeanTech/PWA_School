@@ -1,7 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @typeparam TItem
 
+<!-- 
+    This component is used to create a dropdown box
+
+    It uses bootstrap to make the visuals aka css
+-->
 <div class="dropdown">
+    <!-- This button triggers the dropdown function  -->
     <button class="btn btn-primary dropdown-toggle mr-4" data-toggle="dropdown" type="button" @onclick="e => this.show=!this.show "
             aria-haspopup="true" aria-expanded="false">
         @Tip

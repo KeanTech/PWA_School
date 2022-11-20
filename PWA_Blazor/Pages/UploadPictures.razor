@@ -18,16 +18,20 @@
         </thead>
 
         <tbody>
-            @foreach (var item in storageList)
-            {
-                <tr>
-                    <th scope="row">@storageList.IndexOf(item)</th>
-                    <td><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
-                    <td>@item.FileName</td>
-                    <td>@item.FileSize</td>
-                    <td>@item.ContentType</td>
-                </tr>
+            @*@foreach (var item in storageList)
+        {
+        <tr>
+        <th scope="row">@storageList.IndexOf(item)</th>
+        <td><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
+        <td onclick="">@item.FileName</td>
+        <td>@item.FileSize</td>
+        <td>@item.ContentType</td>
+        </tr>
 
+        }*@
+            @if (storageList.Count > 0)
+            { 
+                <TableBody Items="@storageList"></TableBody>
             }
 
         </tbody>
@@ -66,20 +70,23 @@ else
     private bool isLoading;
     private string extensionname = "default";
     private List<ImageFile> storageList = new List<ImageFile>();
-    private string isdisplayimage;
     private ImageSizeAndTypes sizeAndTypes = new ImageSizeAndTypes();
     private IBrowserFile file;
+
 
     protected override async Task OnInitializedAsync()
     {
         storageList = await localStore.GetItemAsync<List<ImageFile>>("Img");
         if (storageList == null || storageList.Count < 1)
             storageList = new List<ImageFile>();
+
     }
+
 
     // This method is called on evnet in ModalDialog component to set the image name and sizes
     private async void OnCloseDialog(DialogAnwser anwser)
     {
+        isLoading = true;
         if (anwser.ButtonClicked == false)
         {
             ShowDialog = false;
@@ -95,12 +102,8 @@ else
         {
             ImageFile imageFile = await ImageHandling.GetImageFile(file, anwser);
             storageList.Add(imageFile);
-            isdisplayimage = "block";
         }
-        else
-        {
-            isdisplayimage = "none";
-        }
+       
 
         UpdateStorage();
         isLoading = false;

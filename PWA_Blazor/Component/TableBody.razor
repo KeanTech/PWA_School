@@ -1,0 +1,44 @@
+﻿@using System.Reflection
+
+@foreach (var item in Items)
+{
+    <tr>
+        <th scope="row">@Items.IndexOf(item)</th>
+        <td @onclick="e => OnOpenDetails(item) "><img alt="" src="@item.Base64data" style="height:50px;width:50px;" /></td>
+        <td @onclick="e => OnOpenDetails(item)">@item.FileName</td>
+        <td @onclick="e => OnOpenDetails(item)">@item.FileSize</td>
+        <td @onclick="e => OnOpenDetails(item)">@item.ContentType</td>
+    </tr>
+
+}
+
+
+@if (ShowDetails)
+{
+    <DetailsPopup OnClose="OnCloseDetails" ImageFile="_imageFile"></DetailsPopup>
+}
+
+@code {
+
+    [Parameter]
+    public List<ImageFile> Items { get; set; }
+
+    private ImageFile _imageFile;
+    private bool ShowDetails { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private void OnCloseDetails()
+    {
+        ShowDetails = false;
+    }
+
+    private void OnOpenDetails(ImageFile imageFile)
+    {
+        _imageFile = imageFile;
+        ShowDetails = true;
+    }
+}

@@ -55,7 +55,7 @@ namespace PWA_Blazor.Core.Utilities
         {
             IBrowserFile resizedFile;
             int[] sizes = GetImageSizes(anwser);
-            
+
             //resize the image and create the thumbnails
             if(string.IsNullOrEmpty(anwser.ImageType))
                 resizedFile = await file.RequestImageFileAsync(file.ContentType, sizes[0], sizes[1]); // resize the image file
